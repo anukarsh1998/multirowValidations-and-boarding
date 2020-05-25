@@ -150,7 +150,7 @@ $(document).ready(function(){
     html += '<td><input type="time" name="toTime" class="form-control" /></td>';
     html += '<td><input type="number" name="totalAllowances" disabled="true" class="form-control" /></td>';
     html += '<td><input type="number" name="dailyAllowances" disabled="true" class="form-control" /></td>';
-    html += '<td><input type="number"id="amtForBL'+cnt+'" name="amtForBL" disabled="true" class="form-control" /></td>';
+    html += '<td><input type="number"id="amtForBL'+cnt+'" name="amtForBL"  class="form-control" /></td>';
     html += '<td><input type="number" name="actualAMTForBL" class="form-control" /></td>';
     html += '<td><input type="number" name="ownStayAmount" class="form-control" /></td>';
     html += '<td><input type="file" onChange="chkFile(this,'+cnt+')" name="fileprety" id="fileprety" class="form-control" /><input type="hidden" value="demo" name="imgpath[]" id="file_'+cnt+'"></td>';
@@ -196,7 +196,8 @@ $(document).ready(function(){
         if(this.value == 'Others')
           $('#tier3City'+cnt).attr("disabled",false);
         else
-          $('#tier3City'+cnt).attr("disabled",true); 
+        cityAllowance(this.value,cnt);    
+          
     });
   });
  
@@ -222,7 +223,7 @@ $(function () {
       data: $('form#formdata').serialize(),
       success: function (data) {
         console.log(data);
-        alert(data);
+        alert(JSON.stringify(data));
         // location.assign('/expense/tourBillClaim');
       }
     });

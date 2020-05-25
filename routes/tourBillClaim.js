@@ -745,8 +745,124 @@ router.get('/boardingLodgingCharges/:parentTourBillId', verify, (request, respon
 });
 
 router.post('/boardingLodgingCharges',verify, (request, response) => {
-  console.log('body '+JSON.stringify(request.body))
-    response.send('ok o k o k k o  ko ko  ,,,, activityCode and LAbel sux=ccess');
+  console.log('body Boarding Charges '+JSON.stringify(request.body))
+  console.log('typeof(request.body.date)   : '+typeof(request.body.stayOption));
+  const {stayOption,projectTask,placeJourney,fromDate ,fromTime,toDate,toTime,amtForBL,actualAMTForBL,ownStayAmount,activity_code,imgpath ,parentTourBillId} =request.body;
+  console.log('From stayOption '+stayOption );
+  console.log('projectTask '+projectTask );
+  console.log(' placeJourney '+placeJourney );
+  console.log('From time '+fromTime );
+  console.log('toDate  '+toDate );
+  console.log('toTime time '+toTime );
+  console.log('fromDate '+fromDate );
+  console.log(' amtForBL '+amtForBL );
+  console.log(' ownStayAmount '+ownStayAmount );
+  console.log(' activity_code '+activity_code );
+  console.log(' actualAMTForBL '+actualAMTForBL );
+    var fdt=fromDate.split('-');
+    var tdt=toDate.split('-');
+    var dtfrom = new Date(fdt).getTime();
+    var dtto = new Date(tdt).getTime();
+    console.log('from '+dtfrom+' to date '+dtto);
+   // let diff = (dtto-from)/(1000 * 60 * 60 * 24);
+     var days = (parseFloat(dtto)-parseFloat(dtfrom))/(1000 * 60 * 60 * 24);
+      console.log('hsdjhs'+days);
+      var ftime=fromTime.split(':');
+      console.log('gdchjsd'+ftime[0] +ftime[1]);
+      ftime = parseFloat(ftime[0]+ftime[1]);
+      if(ftime>1200)
+      {
+        days=days-0.5;
+        console.log('from '+days);
+      }
+      var tTime= toTime.split(':');
+      tTime=parseFloat(tTime[0]+tTime[1]);
+      console.log('To time '+ tTime)
+      if(tTime<1200)
+      {
+        days=days-0.5;
+        console.log('to Dtimes   '+ days);
+      }
+
+
+      let numberOfRows ;  let lstBoarding = [];
+      if(typeof(request.body.stayOption) == 'object')
+      {
+         numberOfRows = request.body.stayOption.length;
+          console.log('numberOfRows  '+numberOfRows); 
+          for(let i=0; i < numberOfRows ;i++)
+        {
+          var lstcharges=[];
+    //   lstcharges.empty();
+              lstcharges.push(stayOption[i]);
+              lstcharges.push(placeJourney)[i];
+     // lstcharges.push(activity_code);
+              lstcharges.push(projectTask[i]);
+              lstcharges.push(days[i]); 
+              lstcharges.push(fromDate[i]);      
+              lstcharges.push(toDate[i]);
+              lstcharges.push(actualAMTForBL[i]);
+              lstcharges.push(amtForBL[i]);
+              lstcharges.push(ownStayAmount[i]);
+              lstcharges.push(imgpath[i]);
+              lstcharges.push(parentTourBillId[i]);
+      console.log(JSON.stringify(lstcharges));
+      lstBoarding.push(lstcharges);
+        }
+      }
+      else{
+        var lstcharges=[];
+        //   lstcharges.empty();
+                  lstcharges.push(stayOption);
+                  lstcharges.push(placeJourney);
+         // lstcharges.push(activity_code);
+                  lstcharges.push(projectTask);
+                  lstcharges.push(days); 
+                  lstcharges.push(fromDate);      
+                  lstcharges.push(toDate);
+                  lstcharges.push(actualAMTForBL);
+                  lstcharges.push(amtForBL);
+                  lstcharges.push(ownStayAmount);
+                  lstcharges.push(imgpath);
+                  lstcharges.push(parentTourBillId);
+          console.log(JSON.stringify(lstcharges));
+          lstBoarding.push(lstcharges);
+
+}
+     console.log('lstBoarding' +lstBoarding);
+
+      let lodgingboarding = format('INSERT INTO salesforce.Boarding_Lodging__c (Stay_Option__c, Place_Journey__c, 	Project_Task__c,Number_Of_Days__c,From__c,To__c,Actual_Amount_for_boarding_and_lodging__c	,	Amount_for_boarding_and_lodging__c,Own_Stay_Amount__c,Heroku_Image_URL__c,Tour_Bill_Claim__c) VALUES %L returning id',lstBoarding);
+      console.log('qyyy '+lodgingboarding);
+      pool
+      .query(lodgingboarding)
+      .then((queryResult)=>{
+        console.log('QuerryResult '+JSON.stringify(queryResult.rows));
+        response.send(queryResult.rows);
+      })
+      .catch((error)=>{
+        console.log('Error '+error.stack);
+        response.send(error);
+      })
+  /*
+  function dateDiffInDays(a, b) {
+    // Discard the time and time-zone information.
+    const _MS_PER_DAY = 1000 * 60 * 60 * 24;
+    console.log('dhid');
+  
+    const utc2 = Date.UTC(b.getFullYear(), b.getMonth(), b.getDate());
+  
+    return Math.floor((utc2 - utc1) / _MS_PER_DAY);
+  }
+  var difference = dateDiffInDays(fromDate, toDate);
+  console.log('differen'+difference);  
+   var statarr=fromDate.split('-');
+  console.log(statarr);
+  var dstart = new Date(statarr[2]+'/'+statarr[1]+'/'+statarr[0]).getTime();
+
+  console.log('hdkjsd'+dstart); 
+  var diff = dateDiffInDays( toDate ,fromDate);
+  console.log('bjhdfjhd'+diff);
+  */
 });
 
 
@@ -1485,7 +1601,5 @@ router.get('/fetchAllowence',verify,(request,response)=>{
     response.send(error);
   })
 })
-
-
 
 module.exports = router;

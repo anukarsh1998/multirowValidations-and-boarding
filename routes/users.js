@@ -566,7 +566,7 @@ router.post('/sendEMail',(request,response)=>{
     text: 'Plz Click the below link to generate your password',
     html: '<p><a href="http://localhost:7500/users/resetPassword/'+sfid +'">click to resest your password</a></p>' 
   }
-
+//     eresetpasrast?name=sfid;
   transporter.sendMail(message, (err, info) => {
     if (err) {
         console.log('Error occurred. ' + err.message);
