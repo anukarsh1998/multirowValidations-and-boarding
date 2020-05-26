@@ -413,7 +413,7 @@ router.post('/airRailBusCharges',verify, (request, response) => {
                 arrival_Station:joi.string().required().label('Please fill Arrivial Statton'),
                 departure_Station:joi.string().required().label('Please fill Departure Station'),
                 amount:joi.number().required().label('Amount cannot be null'),
-                imgpath:joi.string().invalid('deme').required().label('Upload your File/Attachment'),
+                imgpath:joi.string().invalid('demo').required().label('Upload your File/Attachment'),
             })
             let Result=schema.validate({projectTask:bdy.projectTask,arrival_Dt:bdy.arrival_Date,arrival_Date:bdy.arrival_Date,departure_Date:bdy.departure_Date,amount:bdy.amount,arrival_Station:bdy.arrival_Station,departure_Station:bdy.departure_Station,imgpath:bdy.imgpath});
             console.log('validaton result '+JSON.stringify(Result.error));
@@ -804,9 +804,10 @@ router.post('/boardingLodgingCharges',verify, (request, response) => {
            toDate:joi.date().max('now').required().label('Please Select date BeFore Today Date'),
            fromDate:joi.date().required().less(joi.ref('toDate')).label('selcet date less than  ToDate '),
            actualAMTForBL:joi.number().required().label('Enter Your Actual Boarding lodging Amount'),
+           ownStayAmount:joi.number().required().label('Please Fill O if ownStayAmount is null'),
            imgpath:joi.string().invalid('demo').label('Upload your File/Attachments').required(),
           })
-          let result=schema.validate({stayOption:stayOption[i],toDate:toDate[i],fdy:fromDate[i],fromDate:fromDate[i],actualAMTForBL:actualAMTForBL[i],imgpath:imgpath[i]});
+          let result=schema.validate({ownStayAmount:ownStayAmount[i],stayOption:stayOption[i],toDate:toDate[i],fdy:fromDate[i],fromDate:fromDate[i],actualAMTForBL:actualAMTForBL[i],imgpath:imgpath[i]});
           console.log('Validations'+JSON.stringify(result));
           if(result.error)
           {
@@ -849,9 +850,10 @@ router.post('/boardingLodgingCharges',verify, (request, response) => {
           toDate:joi.date().max('now').required().label('Please Select date BeFore Today Date'),
           fromDate:joi.date().required().less(joi.ref('toDate')).label('selcet date less than  ToDate '),
           actualAMTForBL:joi.number().required().label('Enter Your Actual Boarding lodging Amount'),
+          ownStayAmount:joi.number().required().label('Enter 0 if ownStayAmountod is null'),
           imgpath:joi.string().invalid('demo').label('Upload your File/Attachments').required(),
         })
-        let result=schema.validate({stayOption,toDate,fromDate,fdt:fromDate,actualAMTForBL,imgpath});
+        let result=schema.validate({ownStayAmount,stayOption,toDate,fromDate,fdt:fromDate,actualAMTForBL,imgpath});
         console.log('Validations'+JSON.stringify(result));
         if(result.error)
         {
