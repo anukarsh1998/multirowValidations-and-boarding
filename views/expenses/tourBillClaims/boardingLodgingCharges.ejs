@@ -70,8 +70,8 @@ $(document).ready(function(){
       var html = '';
       html += '<tr>';
       html += '<td>'+cnt+'</td>';
-      html += '<td><select name="stayOption" class="form-control"><option value="">None</option><option value="Own Stay">Own Stay</option><option value="Stay">Stay</option></select>';
-        html += '<td><select id="activity_code'+cnt+'"  name="projectTask" class="form-control item_unit"></select></td>';
+      html += '<td><select  id="stay'+cnt+'" name="stayOption" class="form-control"><option value="">None</option><option value="Own Stay">Own Stay</option><option value="Stay">Stay</option></select>';
+        html += '<td><select id="activity_code'+cnt+'"  name="projectTask" disabled="true" class="form-control item_unit"></select></td>';
       html += '<td><select  id="place'+cnt+'" name="placeJourney" class="form-control" ></select></td>';
       html += '<td><input type="text" id="tier3City'+cnt+'" disabled="true" name="tier3City" class="form-control" /></td>';
       html += '<td><input type="date" name="fromDate" class="form-control" /></td>';
@@ -81,13 +81,29 @@ $(document).ready(function(){
       html += '<td><input type="number" name="totalAllowances" disabled="true" class="form-control" /></td>';
       html += '<td><input type="number" name="dailyAllowances" disabled="true" class="form-control" /></td>';
       html += '<td><input type="number" id ="amtForBL'+cnt+'" name="amtForBL"  class="form-control" /></td>';
-      html += '<td><input type="number" name="actualAMTForBL" class="form-control" /></td>';
-      html += '<td><input type="number" name="ownStayAmount" class="form-control" /></td>';
-      html += '<td><input type="file" onChange="chkFile(this,'+cnt+')" name="fileprety" id="fileprety" class="form-control" /><input type="hidden" value="demo" name="imgpath[]" id="file_'+cnt+'"></td>';
+      html += '<td><input type="number" id="actualAMTForBL'+cnt+'" name="actualAMTForBL" class="form-control" /></td>';
+      html += '<td><input type="number" id="ownStayAmount'+cnt+'" name="ownStayAmount" class="form-control" /></td>';
+      html += '<td><input type="file" onChange="chkFile(this,'+cnt+')" name="fileprety" id="fileprety" class="form-control" /><input type="hidden" value="demo" name="imgpath" id="file_'+cnt+'"></td>';
       html += '<td><button type="button" name="remove" class="btn btn-danger btn-sm remove"><span class="glyphicon glyphicon-minus"></span></button></td></tr>';
       html += '<td style="display:none;"><input  type="hidden" id="projectTask'+cnt+'" name="activity_code"   class="form-control" /></td>';
       html += '<td style="display:none;"><input  type="hidden" name="parentTourBillId" value="<%= parentTourBillId %>" class="form-control" /></td>';
       $('#item_table').append(html);
+      $('#stay'+cnt).on("change" ,function(){
+        if(this.value != 'Stay')
+        {
+        $('#activity_code'+cnt).attr("disabled",true);  
+        $('#amtForBL'+cnt).attr("disabled",true);  
+        $('#actualAMTForBL'+cnt).attr("disabled",true);
+        $('#ownStayAmount'+cnt).attr("disabled",true);  
+        }       
+        else
+        {
+          $('#activity_code'+cnt).attr("disabled",false);  
+          $('#amtForBL'+cnt).attr("disabled",false);  
+          $('#actualAMTForBL'+cnt).attr("disabled",false);
+          $('#ownStayAmount'+cnt).attr("disabled",false); 
+        }
+      })
       $('#activity_code'+cnt)
       .append($("<option></option>")
       .attr("value",'')
@@ -153,7 +169,7 @@ $(document).ready(function(){
     html += '<td><input type="number"id="amtForBL'+cnt+'" name="amtForBL"  class="form-control" /></td>';
     html += '<td><input type="number" name="actualAMTForBL" class="form-control" /></td>';
     html += '<td><input type="number" name="ownStayAmount" class="form-control" /></td>';
-    html += '<td><input type="file" onChange="chkFile(this,'+cnt+')" name="fileprety" id="fileprety" class="form-control" /><input type="hidden" value="demo" name="imgpath[]" id="file_'+cnt+'"></td>';
+    html += '<td><input type="file" onChange="chkFile(this,'+cnt+')" name="fileprety" id="fileprety" class="form-control" /><input type="hidden" value="demo" name="imgpath" id="file_'+cnt+'"></td>';
     html += '<td><button type="button" name="remove" class="btn btn-danger btn-sm remove"><span class="glyphicon glyphicon-minus"></span></button></td></tr>';
     html += '<td style="display:none;"><input  type="hidden" id="projectTask'+cnt+'" name="activity_code"   class="form-control" /></td>';
     html += '<td style="display:none;"><input  type="hidden" name="parentTourBillId" value="<%= parentTourBillId %>" class="form-control" /></td>';
@@ -225,6 +241,13 @@ $(function () {
         console.log(data);
         alert(JSON.stringify(data));
         // location.assign('/expense/tourBillClaim');
+        let errorHtml = '<div class="alert alert-danger alert-dismissible fade show" role="alert">'+ data+
+          '<button type="button" class="close" data-dismiss="alert" aria-label="Close">'+
+            '<span aria-hidden="true">&times;</span>'+
+          '</button>'+
+        '</div>';
+        $('#errorMessages').empty();
+        $('#errorMessages').append(errorHtml);
       }
     });
     return false;

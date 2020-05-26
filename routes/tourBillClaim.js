@@ -748,6 +748,7 @@ router.post('/boardingLodgingCharges',verify, (request, response) => {
   console.log('body Boarding Charges '+JSON.stringify(request.body))
   console.log('typeof(request.body.date)   : '+typeof(request.body.stayOption));
   const {stayOption,projectTask,placeJourney,fromDate ,fromTime,toDate,toTime,amtForBL,actualAMTForBL,ownStayAmount,activity_code,imgpath ,parentTourBillId} =request.body;
+  console.log('ulploadFile '+imgpath);
   console.log('From stayOption '+stayOption );
   console.log('projectTask '+projectTask );
   console.log(' placeJourney '+placeJourney );
@@ -759,7 +760,7 @@ router.post('/boardingLodgingCharges',verify, (request, response) => {
   console.log(' ownStayAmount '+ownStayAmount );
   console.log(' activity_code '+activity_code );
   console.log(' actualAMTForBL '+actualAMTForBL );
-    var fdt=fromDate.split('-');
+  /*   var fdt=fromDate.split('-');
     var tdt=toDate.split('-');
     var dtfrom = new Date(fdt).getTime();
     var dtto = new Date(tdt).getTime();
@@ -784,40 +785,82 @@ router.post('/boardingLodgingCharges',verify, (request, response) => {
         console.log('to Dtimes   '+ days);
       }
 
+ */
 
-      let numberOfRows ;  let lstBoarding = [];
+      let numberOfRows ;  var lstBoarding = [];
       if(typeof(request.body.stayOption) == 'object')
       {
          numberOfRows = request.body.stayOption.length;
           console.log('numberOfRows  '+numberOfRows); 
           for(let i=0; i < numberOfRows ;i++)
-        {
+        { 
+          const schema =joi.object({
+            stayOption:joi.string().required().label('Please Choose Stay Mode'),
+          // projectTask:joi.string().required().label('Activity code is reqired '),
+           toDate:joi.date().max('now').required().label('Please Select date BeFore Today Date'),
+           fromDate:joi.date().required().less(joi.ref('toDate')).label('selcet date less than  ToDate '),
+           actualAMTForBL:joi.number().required().label('Enter Your Actual Boarding lodging Amount'),
+           imgpath:joi.string().invalid('demo').label('Upload your File/Attachments').required(),
+          })
+          let result=schema.validate({stayOption:stayOption[i],toDate:toDate[i],fromDate:fromDate[i],actualAMTForBL:actualAMTForBL[i],imgpath:imgpath[i]});
+          console.log('Validations'+JSON.stringify(result));
+          if(result.error)
+          {
+            console.log('fd'+result.error)
+            response.send(result.error.details[0].context.label);
+          }
+          else
+          {
           var lstcharges=[];
-    //   lstcharges.empty();
               lstcharges.push(stayOption[i]);
-              lstcharges.push(placeJourney)[i];
-     // lstcharges.push(activity_code);
+              console.log('.....1 =>'+ lstcharges);
+              lstcharges.push(placeJourney[i]);
               lstcharges.push(projectTask[i]);
-              lstcharges.push(days[i]); 
+              console.log('.....2 =>'+ lstcharges);
+           //   lstcharges.push(days[i]); 
               lstcharges.push(fromDate[i]);      
               lstcharges.push(toDate[i]);
               lstcharges.push(actualAMTForBL[i]);
+              console.log('.....3 =>'+ lstcharges);
               lstcharges.push(amtForBL[i]);
               lstcharges.push(ownStayAmount[i]);
+              console.log('.....4 =>'+ lstcharges);
+              if(typeof(imgpath[i] != 'undefined'))
               lstcharges.push(imgpath[i]);
+              else
+              lstcharges.push('');
               lstcharges.push(parentTourBillId[i]);
-      console.log(JSON.stringify(lstcharges));
-      lstBoarding.push(lstcharges);
-        }
+              console.log('.....4 =>'+ lstcharges);
+             // lstBoarding.push(lstcharges);
+             console.log('.. '+lstcharges);
+             lstBoarding.push(lstcharges);
+          }
+        }console.log(' jsdkjasdkjad'+lstBoarding);
       }
       else{
+        const schema=joi.object({
+          stayOption:joi.string().required().label('Please Choose Stay Mode'),
+         // projectTask:joi.string().required().label('Activity code is reqired '),
+          toDate:joi.date().max('now').required().label('Please Select date BeFore Today Date'),
+          fromDate:joi.date().required().less(joi.ref('toDate')).label('selcet date less than  ToDate '),
+          actualAMTForBL:joi.number().required().label('Enter Your Actual Boarding lodging Amount'),
+          imgpath:joi.string().invalid('demo').label('Upload your File/Attachments').required(),
+        })
+        let result=schema.validate({stayOption,toDate,fromDate,actualAMTForBL,imgpath});
+        console.log('Validations'+JSON.stringify(result));
+        if(result.error)
+        {
+          console.log('fd'+result.error)
+                response.send(result.error.details[0].context.label);
+        }
+        else{
         var lstcharges=[];
         //   lstcharges.empty();
                   lstcharges.push(stayOption);
                   lstcharges.push(placeJourney);
          // lstcharges.push(activity_code);
                   lstcharges.push(projectTask);
-                  lstcharges.push(days); 
+                //  lstcharges.push(days); 
                   lstcharges.push(fromDate);      
                   lstcharges.push(toDate);
                   lstcharges.push(actualAMTForBL);
@@ -827,11 +870,11 @@ router.post('/boardingLodgingCharges',verify, (request, response) => {
                   lstcharges.push(parentTourBillId);
           console.log(JSON.stringify(lstcharges));
           lstBoarding.push(lstcharges);
-
+        }
 }
      console.log('lstBoarding' +lstBoarding);
 
-      let lodgingboarding = format('INSERT INTO salesforce.Boarding_Lodging__c (Stay_Option__c, Place_Journey__c, 	Project_Task__c,Number_Of_Days__c,From__c,To__c,Actual_Amount_for_boarding_and_lodging__c	,	Amount_for_boarding_and_lodging__c,Own_Stay_Amount__c,Heroku_Image_URL__c,Tour_Bill_Claim__c) VALUES %L returning id',lstBoarding);
+      let lodgingboarding = format('INSERT INTO salesforce.Boarding_Lodging__c (Stay_Option__c, Place_Journey__c, 	Project_Task__c,From__c,To__c,Actual_Amount_for_boarding_and_lodging__c	,	Amount_for_boarding_and_lodging__c,Own_Stay_Amount__c,Heroku_Image_URL__c,Tour_Bill_Claim__c) VALUES %L returning id',lstBoarding);
       console.log('qyyy '+lodgingboarding);
       pool
       .query(lodgingboarding)
