@@ -36,8 +36,6 @@
    </form>
    </div>
   </div>
- 
-
 
 <script>
 $(document).ready(function(){
@@ -112,27 +110,27 @@ $(document).ready(function(){
     
     $('#item_table').append(html);
     $('#activity_code'+cnt)
-      .append($("<option></option>")
-      .attr("value",'')
-      .text('Select'));	
-    for(let i=0; i< activityCodes.length ;i++)
-    {
-      $('#activity_code'+cnt)
-      .append($("<option></option>")
-      .attr("value",activityCodes[i].sfid)
-      .text(activityCodes[i].activity_code__c));	
-    }
-    $('#activity_code'+cnt).on('change',function(){
+    .append($("<option></option>")
+    .attr("value",'')
+    .text('Select'));	
+  for(let i=0; i< activityCodes.length ;i++)
+  {
+    $('#activity_code'+cnt)
+    .append($("<option></option>")
+    .attr("value",activityCodes[i].sfid)
+    .text(activityCodes[i].activity_code__c));	
+  }
+  $('#activity_code'+cnt).on('change',function(){
       let taskId = this.value;
-      let value = this.value;	        let selectedCode = activityCodes.filter((eachCode)=> {
-      console.log('label  :'+label+' value'+value);	          if(eachCode.sfid == taskId)
+      let selectedCode = activityCodes.filter((eachCode)=> {
+        if(eachCode.sfid == taskId)
           return eachCode;
       })
       let label = selectedCode[0].activity_code__c;
       document.getElementById('projectTask'+cnt).value = label;
     //  $('#projectTask'+cnt).value = label;
       console.log('label  :'+label+' value : '+taskId);
-    })
+  })
  });
  
  $(document).on('click', '.remove', function(){

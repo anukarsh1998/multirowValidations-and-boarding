@@ -225,8 +225,6 @@ router.get('/getAirBusListView',verify,(request,response)=>{
   
     response.render('./expenses/tourBillClaims/airRailBusListView', {objUser, tourbillId});
 });
-
-  
   router.get('/getAirbusDetalList',verify,(request,response)=>{
      let objUser = request.user;
     console.log('objUser  : '+JSON.stringify(objUser));
@@ -369,14 +367,16 @@ router.post('/airRailBusCharges',verify, (request, response) => {
             {
 
               const schema = joi.object({
+                arrival_Dt:joi.date().label('plz enter the Arrival Date less tha n Departure date and Today '),
                 departure_Date:joi.date().max('now').label('departure_Date must be less than Today').required(),
                 arrival_Date:joi.date().less(joi.ref('departure_Date')).label('Arrival Date must be less than departure_Date').required(),
-                amount:joi.number().required().label('Amount cannot be null'),
+                projectTask:joi.string().required().label('Select Activity Code '),
                 arrival_Station:joi.string().required().label('Please fill Arrivial Statton'),
                 departure_Station:joi.string().required().label('Please fill Departure Station'),
+                amount:joi.number().required().label('Amount cannot be null'),
                 imgpath:joi.string().invalid('deme').required().label('Upload your File/Attachment'),
             })
-            let Result=schema.validate({departure_Date:bdy.departure_Date[i],arrival_Date:bdy.arrival_Date[i],amount:bdy.amount[i],arrival_Station:bdy.arrival_Station[i],departure_Station:bdy.departure_Station[i],imgpath:bdy.imgpath[i]});
+            let Result=schema.validate({projectTask:bdy.projectTask[i],arrival_Dt:bdy.arrival_Date[i],departure_Date:bdy.departure_Date[i],arrival_Date:bdy.arrival_Date[i],amount:bdy.amount[i],arrival_Station:bdy.arrival_Station[i],departure_Station:bdy.departure_Station[i],imgpath:bdy.imgpath[i]});
             console.log('validaton result '+JSON.stringify(Result.error));
                   if(Result.error)
                   {
@@ -406,14 +406,16 @@ router.post('/airRailBusCharges',verify, (request, response) => {
             for(let i=0; i<numberOfRows ;i++)
             { 
               const schema = joi.object({
+                arrival_Dt:joi.date().required().label('Please fill arrival date LEss tha Today and Departure date'),
+                arrival_Date:joi.date().less(joi.ref('departure_Date')).label('departure_Date  must be greter than Arrivaldate').required(),
                 departure_Date:joi.date().max('now').label('departure_Date must be less than Today').required(),
-                arrival_Date:joi.date().less(joi.ref('departure_Date')).label('Arrival Date must be less than departure_Date').required(),
-                amount:joi.number().required().label('Amount cannot be null'),
+                projectTask:joi.string().required().label('Select Activity Code '),
                 arrival_Station:joi.string().required().label('Please fill Arrivial Statton'),
                 departure_Station:joi.string().required().label('Please fill Departure Station'),
+                amount:joi.number().required().label('Amount cannot be null'),
                 imgpath:joi.string().invalid('deme').required().label('Upload your File/Attachment'),
             })
-            let Result=schema.validate({departure_Date:bdy.departure_Date,arrival_Date:bdy.arrival_Date,amount:bdy.amount,arrival_Station:bdy.arrival_Station,departure_Station:bdy.departure_Station,imgpath:bdy.imgpath});
+            let Result=schema.validate({projectTask:bdy.projectTask,arrival_Dt:bdy.arrival_Date,arrival_Date:bdy.arrival_Date,departure_Date:bdy.departure_Date,amount:bdy.amount,arrival_Station:bdy.arrival_Station,departure_Station:bdy.departure_Station,imgpath:bdy.imgpath});
             console.log('validaton result '+JSON.stringify(Result.error));
             if(Result.error)
             {
@@ -513,11 +515,12 @@ if(result.error)
             const schema = joi.object({
             date:joi.date().max('now').required().label('Date should be less than Today'),
             place:joi.string().required().label('Enter your Place'), 
+            projectTask:joi.string().required().label('Please select the ActivityCode'),
             amount:joi.number().required().label('Amount cannot be Null'),
             imgpath:joi.string().valid('demo').label('Upload your File/Attachments').required(),
           //  activity_code:joi.required,
               })
-              let result= schema.validate({date:bodyResult.date[i],place:bodyResult.place[i],imgpath:bodyResult.imgpath[i],amount:bodyResult.amount[i]});
+              let result= schema.validate({projectTask:bodyResult.projectTask[i],date:bodyResult.date[i],place:bodyResult.place[i],imgpath:bodyResult.imgpath[i],amount:bodyResult.amount[i]});
               if(result.error)
               {
                   console.log('fd'+result.error)
@@ -551,16 +554,16 @@ if(result.error)
         numberOfRows = 1;
         for(let i=0; i < numberOfRows ;i++)
         {
-
           const schema = joi.object({
             date:joi.date().max('now').required().label('Date should be less than Today'),
             place:joi.string().required().label('Enter your Place'), 
+            projectTask:joi.string().required().label('Select The Activity Code'),
               amount:joi.number().required().label('Amount cannot be Null'),
               imgpath:joi.string().valid('demo').label('Upload your File/Attachments').required(),
           //  activity_code:joi.required,
         })
             
-            let result= schema.validate({date:bodyResult.date,place:bodyResult.place,imgpath:bodyResult.imgpath,amount:bodyResult.amount});
+            let result= schema.validate({projectTask:bodyResult.projectTask,date:bodyResult.date,place:bodyResult.place,imgpath:bodyResult.imgpath,amount:bodyResult.amount});
         if(result.error)
         {
             console.log('fd'+result.error)
@@ -797,12 +800,13 @@ router.post('/boardingLodgingCharges',verify, (request, response) => {
           const schema =joi.object({
             stayOption:joi.string().required().label('Please Choose Stay Mode'),
           // projectTask:joi.string().required().label('Activity code is reqired '),
+          fdy:joi.date().label('Please select FromDate less than Todate and Today '),
            toDate:joi.date().max('now').required().label('Please Select date BeFore Today Date'),
            fromDate:joi.date().required().less(joi.ref('toDate')).label('selcet date less than  ToDate '),
            actualAMTForBL:joi.number().required().label('Enter Your Actual Boarding lodging Amount'),
            imgpath:joi.string().invalid('demo').label('Upload your File/Attachments').required(),
           })
-          let result=schema.validate({stayOption:stayOption[i],toDate:toDate[i],fromDate:fromDate[i],actualAMTForBL:actualAMTForBL[i],imgpath:imgpath[i]});
+          let result=schema.validate({stayOption:stayOption[i],toDate:toDate[i],fdy:fromDate[i],fromDate:fromDate[i],actualAMTForBL:actualAMTForBL[i],imgpath:imgpath[i]});
           console.log('Validations'+JSON.stringify(result));
           if(result.error)
           {
@@ -841,12 +845,13 @@ router.post('/boardingLodgingCharges',verify, (request, response) => {
         const schema=joi.object({
           stayOption:joi.string().required().label('Please Choose Stay Mode'),
          // projectTask:joi.string().required().label('Activity code is reqired '),
+          fdt:joi.date().label('Please Enter FROM DATE Less than Todate And TODAY'),
           toDate:joi.date().max('now').required().label('Please Select date BeFore Today Date'),
           fromDate:joi.date().required().less(joi.ref('toDate')).label('selcet date less than  ToDate '),
           actualAMTForBL:joi.number().required().label('Enter Your Actual Boarding lodging Amount'),
           imgpath:joi.string().invalid('demo').label('Upload your File/Attachments').required(),
         })
-        let result=schema.validate({stayOption,toDate,fromDate,actualAMTForBL,imgpath});
+        let result=schema.validate({stayOption,toDate,fromDate,fdt:fromDate,actualAMTForBL,imgpath});
         console.log('Validations'+JSON.stringify(result));
         if(result.error)
         {
@@ -1090,10 +1095,11 @@ router.post('/telephoneFood',verify, (request, response) => {
           const schema= joi.object({
             foodingExpenses:joi.number().required().label('Choose "0" if No Fooding Expense' ),
             laundryExpenses:joi.number().required().label('choose "0" if No Laundry Expense'),
+            projectTask:joi.string().required().label('Selecet ActivityCode '),
             imgpath:joi.string().invalid('demo').label('Upload your File/Attachments').required(),
             })   // .or('foodingExpenses','laundryExpenses')
     
-          let result= schema.validate({foodingExpenses:request.body.foodingExpenses,laundryExpenses:request.body.laundryExpenses,imgpath:request.body.imgpath});
+          let result= schema.validate({projectTask:request.body.projectTask, foodingExpenses:request.body.foodingExpenses,laundryExpenses:request.body.laundryExpenses,imgpath:request.body.imgpath});
                   if(result.error)
                     {
                       console.log('Vladtion '+JSON.stringify(result.error));
@@ -1119,10 +1125,11 @@ router.post('/telephoneFood',verify, (request, response) => {
               const schema= joi.object({
                 foodingExpenses:joi.number().required().label('Choose "0" if No Fooding Expense' ),
                 laundryExpenses:joi.number().required().label('choose "0" if No Laundry Expense'),
+                projectTask:joi.string().required().label('Select Your ActivityCode first'),
                 imgpath:joi.string().invalid('demo').label('Upload your File/Attachments').required(),
                 })   // .or('foodingExpenses','laundryExpenses')
         
-              let result= schema.validate({foodingExpenses:request.body.foodingExpenses[i],laundryExpenses:request.body.laundryExpenses[i],imgpath:request.body.imgpath[i]});
+              let result= schema.validate({projectTask:request.body.projectTask[i],foodingExpenses:request.body.foodingExpenses[i],laundryExpenses:request.body.laundryExpenses[i],imgpath:request.body.imgpath[i]});
                       if(result.error)
                         {
                           console.log('Vladtion '+JSON.stringify(result.error));
@@ -1431,10 +1438,11 @@ router.get('/miscellaneousCharge',verify,(request,response)=>{
 
           const schema =joi.object({
             date:joi.date().max('now').required().label('Date must be less than Today'),
-         particulars_mode:joi.string().required().label('Please provide Mode'),
+            particulars_mode:joi.string().required().label('Please provide Mode'),
+            projectTask:joi.string().label('Select YOur ActivityCode '),
             amount:joi.number().required().label('Amount cannot be null'),
         })
-        let result = schema.validate({date:request.body.date,amount:request.body.amount,particulars_mode:request.body.particulars_mode})
+        let result = schema.validate({projectTask:request.body.projectTask,date:request.body.date,amount:request.body.amount,particulars_mode:request.body.particulars_mode})
         console.log('validation '+JSON.stringify(result));
         if(result.error)
         {
@@ -1462,9 +1470,10 @@ router.get('/miscellaneousCharge',verify,(request,response)=>{
                const schema =joi.object({
                 date:joi.date().max('now').required().label('Date must be less than Today'),
                   particulars_mode:joi.string().required().label('Mode should BE Define'),
+                  projectTask:joi.string().required().label('select ActivityCode'),
                 amount:joi.number().required().label('Amount cannot be null'),
              })
-            let result = schema.validate({date:request.body.date[i],amount:request.body.amount[i],particulars_mode:request.body.particulars_mode[i]})
+            let result = schema.validate({projectTask:request.body.projectTask[i],date:request.body.date[i],amount:request.body.amount[i],particulars_mode:request.body.particulars_mode[i]})
             console.log('validation '+JSON.stringify(result));
             if(result.error)
             {
